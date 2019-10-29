@@ -5,12 +5,16 @@
   "dependencies": {
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
+    "react-formio": "^4.2.1",
     "react-scripts": "3.2.0"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "dev": "concurrently \"node expose.js\" \"yarn start\"",
+    "serve": "yarn start",
+    "expose": "node expose.js",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -27,5 +31,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "concurrently": "^5.0.0",
+    "dotenv": "^8.2.0",
+    "localtunnel": "^2.0.0"
   }
 }

@@ -1,0 +1,28 @@
+{
+  "name": "mosaic-ui-api-demo",
+  "version": "1.0.0",
+  "description": "To make your localhost accessible anywhere install Localtunnel globally (requires NodeJS)",
+  "main": "server.js",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "mssql": "^5.1.0",
+    "mysql": "^2.17.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/josuecorm/mosaic-ui-api-demo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/josuecorm/mosaic-ui-api-demo/issues"
+  },
+  "homepage": "https://github.com/josuecorm/mosaic-ui-api-demo#readme"
+}

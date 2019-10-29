@@ -1,8 +1,19 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Setup
+- Create .env file in project root
+- Set DEV_URL value to your personal subdomain (Ex. DEV_URL=mosaic-ui-myname)
+- Run yarn install
+- Run yarn dev
+
 ## Available Scripts
 
 In the project directory, you can run:
+
+### `yarn dev`
+
+Runs the app in development mode and creates a public sub domain on localtunnel.me using DEV_URL value as follows:
+<DEV_URL>.localtunnel.me
 
 ### `yarn start`
 

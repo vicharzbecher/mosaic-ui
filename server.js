@@ -65,9 +65,9 @@ app.post('/admins/notificate', (req, res, next) => {
 
     const emails = result.map(user => user.email).join(', ');
     const mailOptions = {
-      from: '"Test Server" <support@mosaicui.com>',
+      from: '"Mosaic Support" <support@mosaicui.com>',
       to: emails,
-      subject: "Mosaic UI - Error Support",
+      subject: "Customer Notification Admin - Error Support",
       text: "This is an mosaic UI email test"
     };
 
@@ -81,6 +81,21 @@ app.post('/admins/notificate', (req, res, next) => {
       return res.send({ message: "Email successfully sent." });
     });
   });
+});
+
+app.get('/forms/:formId', (req, res) => {
+  const formId = req.params.formId;
+  const sql = `SELECT * FROM form WHERE id = ${formId}`
+  
+  connection.query(sql, (err, result) => {
+    if (err) next(err)
+
+    res.send({ data: result });
+  });
+});
+
+app.post('/forms', (req, res) => {
+  return res.send({ data: req.body })
 });
 
 app.use((err, req, res, next) => {

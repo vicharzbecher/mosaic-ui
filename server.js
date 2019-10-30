@@ -65,9 +65,9 @@ app.post('/admins/notificate', (req, res, next) => {
 
     const emails = result.map(user => user.email).join(', ');
     const mailOptions = {
-      from: '"Test Server" <support@mosaicui.com>',
+      from: '"Mosaic Support" <support@mosaicui.com>',
       to: emails,
-      subject: "Mosaic UI - Error Support",
+      subject: "Customer Notification Admin - Error Support",
       text: "This is an mosaic UI email test"
     };
 
@@ -82,6 +82,9 @@ app.post('/admins/notificate', (req, res, next) => {
     });
   });
 });
+
+app.get('/forms', (req, res) => res.send({"_id":"5db76cfef8917c975652d129","type":"form","tags":[],"owner":"5db29779cb4ff22499f1ab46","components":[{"autofocus":false,"input":true,"tableView":true,"label":"Select the error code","key":"select","placeholder":"","data":{"values":[{"value":"","label":""}],"json":"","url":"https://mosaic-ui-api.localtunnel.me/codes","resource":"5db297e88b6d0b152fab2b8c","custom":"","project":"osnodsjcwhrwjsk","headers":[{"value":"","key":""}]},"dataSrc":"url","valueProperty":"id","defaultValue":"","refreshOn":"","filter":"","authenticate":false,"template":"<span>{{ item.code }}</span>","multiple":false,"protected":false,"unique":false,"persistent":true,"hidden":false,"clearOnHide":true,"validate":{"required":false},"type":"select","labelPosition":"top","tags":[],"conditional":{"show":"","when":null,"eq":""},"properties":{},"selectValues":"data","defaultPermission":""},{"autofocus":false,"input":true,"label":"Submit","tableView":false,"key":"submit","size":"md","leftIcon":"","rightIcon":"","block":false,"action":"submit","disableOnInvalid":false,"theme":"primary","type":"button"}],"revisions":"","_vid":0,"title":"dropdown","display":"form","access":[{"roles":[],"type":"create_own"},{"roles":[],"type":"create_all"},{"roles":[],"type":"read_own"},{"roles":["5db297e88b6d0b27ddab2b89","5db297e88b6d0b9de1ab2b8a","5db297e88b6d0b57b6ab2b8b"],"type":"read_all"},{"roles":[],"type":"update_own"},{"roles":[],"type":"update_all"},{"roles":[],"type":"delete_own"},{"roles":[],"type":"delete_all"},{"roles":[],"type":"team_read"},{"roles":[],"type":"team_write"},{"roles":[],"type":"team_admin"}],"submissionAccess":[{"roles":["5db297e88b6d0b57b6ab2b8b"],"type":"create_own"},{"roles":[],"type":"create_all"},{"roles":["5db297e88b6d0b57b6ab2b8b"],"type":"read_own"},{"roles":[],"type":"read_all"},{"roles":["5db297e88b6d0b57b6ab2b8b"],"type":"update_own"},{"roles":[],"type":"update_all"},{"roles":["5db297e88b6d0b57b6ab2b8b"],"type":"delete_own"},{"roles":[],"type":"delete_all"},{"roles":[],"type":"team_read"},{"roles":[],"type":"team_write"},{"roles":[],"type":"team_admin"}],"settings":{},"properties":{},"name":"dropdown","path":"dropdown","project":"5db297e88b6d0b9579ab2b88","created":"2019-10-28T22:34:38.724Z","modified":"2019-10-30T17:38:31.233Z","machineName":"osnodsjcwhrwjsk:dropdown"}));
+app.get('/forms/:formId', (req, res) => res.send({ message: 'hello' }));
 
 app.use((err, req, res, next) => {
   res.status(err.status || 500).json({

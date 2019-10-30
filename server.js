@@ -36,18 +36,18 @@ connection.connect((err) => {
 
 app.get('/', (req, res) => res.send({ message: 'hello' }));
 
-app.get('/codes', (req, res) => {
+app.get('/codes', (req, res, next) => {
   connection.query('SELECT * from error', (err, result) => {
-    if (err) throw err
+    if (err) next(err)
     return res.send({ data: result });
   })
 });
 
-app.post('/admins/notificate', (req, res) => {
+app.post('/admins/notificate', (req, res, next) => {
   const uuid = req.body.request.data.select;
   const sql = `SELECT user.email, user.first_name, user.last_name FROM error_user INNER JOIN user ON user.id = error_user.userId WHERE errorId = '${uuid}'`;
   connection.query(sql, (err, result) => {
-    if (err) throw err
+    if (err) next(err)
 
     const emails = result.map(user => user.email).join(', ');
     const mailOptions = {

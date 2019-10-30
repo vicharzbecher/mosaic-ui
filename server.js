@@ -43,6 +43,20 @@ app.get('/codes', (req, res, next) => {
   })
 });
 
+app.get('/events', (req, res, next) => {
+  connection.query('SELECT * from event', (err, result) => {
+    if (err) next(err)
+    return res.send({ data: result });
+  })
+});
+
+app.get('/applications', (req, res, next) => {
+  connection.query('SELECT * from application', (err, result) => {
+    if (err) next(err)
+    return res.send({ data: result });
+  })
+});
+
 app.post('/admins/notificate', (req, res, next) => {
   const uuid = req.body.request.data.select;
   const sql = `SELECT user.email, user.first_name, user.last_name FROM error_user INNER JOIN user ON user.id = error_user.userId WHERE errorId = '${uuid}'`;

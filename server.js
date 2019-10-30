@@ -32,7 +32,8 @@ app.get('/codes', (req, res) => {
 });
 
 app.post('/admins/notificate', (req, res) => {
-  const sql = `SELECT user.email, user.first_name, user.last_name FROM error_user INNER JOIN user ON user.id = error_user.userId WHERE errorId = '${req.body.codeId}'`;
+  const uuid = req.body.codeId || req.body.data.select;
+  const sql = `SELECT user.email, user.first_name, user.last_name FROM error_user INNER JOIN user ON user.id = error_user.userId WHERE errorId = '${uuid}'`;
   connection.query(sql, (err, result) => {
     if (err) throw err
     return res.send({ data: { code: { uuid: req.body.codeId }, admins: result } });

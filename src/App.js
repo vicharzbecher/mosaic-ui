@@ -17,7 +17,7 @@ function App() {
     
     
     <Router>
-      <h1>Mosaic Form Builder</h1>
+      <h1 style={{margin: 'auto', width: 400}}>Mosaic Form Builder</h1>
       <hr/>
       <div>
         <nav>

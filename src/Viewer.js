@@ -15,7 +15,9 @@ function Viewer() {
       <div className="panel panel-default" style={{maxWidth: 500, margin: "auto"}}>
         <Form src={url} 
             onChange={(submission)=>{console.log(submission)}} 
-            beforeSubmit={(submission, next)=>{console.log(submission)}}/>
+            beforeSubmit={(submission, next)=>{console.log(submission)}}
+            onRender={(data)=>{console.log(data)}}
+            />
       </div>
     </div>
   );

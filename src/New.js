@@ -1,11 +1,14 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {FormEdit} from 'react-formio';
 import axios from 'axios';
 
 function New() {
+
+  const [message, setMessage] = useState('');
+
   return (
     <div className="App">
-
+      <h2 className="">{message}</h2>
       <header className="App-header">
         Form Editor
       </header>
@@ -15,7 +18,11 @@ function New() {
           //onChange={(schema) => {console.log("Changed"); console.log(JSON.stringify(schema));}}
           saveForm={(form) => {
             axios.post('http://ec2-3-89-92-22.compute-1.amazonaws.com/forms/', form).then((response)=>{console.log(response);
-            alert('Form saved');})
+              setMessage('New form saved');
+              setTimeout(() => {
+                setMessage('');
+              }, 2000);
+            })
           }}
           ></FormEdit>
       </div>

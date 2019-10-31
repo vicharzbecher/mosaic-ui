@@ -103,14 +103,6 @@ app.post('/forms', (req, res) => {
   });
 });
 
-app.use((err, req, res, next) => {
-  res.status(err.status || 500).json({
-    error: {
-      message: err.message || "Internal Server Error"
-    }
-  })
-})
-
 app.post('/forms/update', (req, res, next) => {
   const formId = req.body._id;
   const schemaObj = {
@@ -133,5 +125,20 @@ app.post('/forms/update', (req, res, next) => {
     res.send({ message: "Form successfully updated." })
   });
 });
+
+app.get('/licenses', (req, res, next) => {
+  connection.query('SELECT * from licenses', (err, result) => {
+    if (err) next(err)
+    return res.send({ data: result });
+  })
+});
+
+app.use((err, req, res, next) => {
+  res.status(err.status || 500).json({
+    error: {
+      message: err.message || "Internal Server Error"
+    }
+  })
+})
 
 app.listen(8080, () => console.log("Server running on port 8080"));

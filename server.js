@@ -74,19 +74,24 @@ app.get('/forms/:formId', (req, res, next) => {
   connection.query(sql, (err, result) => {
     if (err) next(err)
 
-    const schema = JSON.parse(result[0].schema);
-
-    const jsonSchema = {
-      _id: result[0].id,
-      title:  schema.title,
-      type: schema.display,
-      display: schema.display,
-      components: schema.components,
-      name: result[0].name,
-      path: schema.path,
+    if (!result.length){
+      res.send({ message: "Form not found" })
+    } else{
+      const schema = JSON.parse(result[0].schema);
+  
+      const jsonSchema = {
+        _id: result[0].id,
+        title:  schema.title,
+        type: schema.display,
+        display: schema.display,
+        components: schema.components,
+        name: result[0].name,
+        path: schema.path,
+      }
+  
+      res.send(jsonSchema);
     }
 
-    res.send(jsonSchema);
   });
 });
 

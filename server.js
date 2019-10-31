@@ -36,22 +36,18 @@ connection.connect((err) => {
 
 app.get('/', (req, res) => res.send({ message: 'hello' }));
 
-app.get('/codes', (req, res, next) => {
-  connection.query('SELECT * from error', (err, result) => {
+app.get('/uuids', (req, res, next) => {
+  connection.query('SELECT uuid from customer_notifications', (err, result) => {
     if (err) next(err)
     return res.send({ data: result });
   })
 });
 
-app.get('/events', (req, res, next) => {
-  connection.query('SELECT * from event', (err, result) => {
-    if (err) next(err)
-    return res.send({ data: result });
-  })
-});
+app.get('/uuids/:uuid', (req, res, next) => {
+  const uuid = req.params.uuid;
+  const sql = `SELECT * from customer_notifications WHERE uuid = '${uuid}'`;
 
-app.get('/applications', (req, res, next) => {
-  connection.query('SELECT * from application', (err, result) => {
+  connection.query(sql, (err, result) => {
     if (err) next(err)
     return res.send({ data: result });
   })
@@ -146,7 +142,7 @@ app.post('/forms/update', (req, res, next) => {
   connection.query('UPDATE form SET ? WHERE id = ?', [form, formId], (err, result) => {
     if(err) next(err);
 
-    res.send({ message: "Form successfully update." })
+    res.send({ message: "Form successfully updated." })
   });
 });
 

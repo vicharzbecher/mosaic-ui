@@ -104,7 +104,7 @@ app.post('/forms', (req, res) => {
   connection.query('INSERT INTO form SET ?', form, (err, result) => {
     if(err) next(err);
 
-    res.send({ message: "Form successfully saved." })
+    res.send({ id: result.insertId, message: "Form successfully saved." })
   });
 });
 

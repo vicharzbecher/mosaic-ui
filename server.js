@@ -135,7 +135,7 @@ app.get('/licenses', (req, res, next) => {
 
 app.post('/licenses', (req, res, next) => {
   const licenseId = req.body.data.license.license_id;
-  const seats = req.body.data.license.seats;
+  const seats = req.body.data.seats;
 
   connection.query('UPDATE licenses SET seats = ? WHERE license_id = ?', [seats, licenseId], (err, result) => {
     if(err) next(err);

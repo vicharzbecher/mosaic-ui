@@ -18,10 +18,7 @@ function New() {
           //onChange={(schema) => {console.log("Changed"); console.log(JSON.stringify(schema));}}
           saveForm={(form) => {
             axios.post('http://ec2-3-89-92-22.compute-1.amazonaws.com/forms/', form).then((response)=>{console.log(response);
-              setMessage('New form saved');
-              setTimeout(() => {
-                setMessage('');
-              }, 2000);
+              setMessage(`${response.data.message} ID: ${response.data.id}`);
             })
           }}
           ></FormEdit>

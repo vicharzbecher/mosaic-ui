@@ -10,8 +10,6 @@ class Editor extends React.Component {
   constructor(props) {
     super(props);
     this.state = {form: '', loading: true, message: ''};
-    this.message = 'Saved';
-    this.saveButtonText = React.createRef();
   }
 
   async componentDidMount() {
@@ -44,7 +42,6 @@ class Editor extends React.Component {
         <div className="panel panel-default">
           <FormEdit  form={form}
             saveText="Save form"
-            ref={this.saveButtonText}
             //onChange={(schema) => {console.log("Changed"); console.log(JSON.stringify(schema));}}
             saveForm={(form) => {
               axios.post('http://ec2-3-89-92-22.compute-1.amazonaws.com/forms/update', form).then((response)=>{

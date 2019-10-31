@@ -39,9 +39,8 @@ function App() {
         <Switch>
           <Route path="/editor/:formId" component={Editor} />
           
-          <Route path="/viewer/:formId">
-            <Viewer />
-          </Route>
+          <Route path="/viewer/:formId" component={Viewer} />
+          
           <Route path="/" >
             <New />
           </Route>

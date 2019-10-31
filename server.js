@@ -58,6 +58,7 @@ app.get('/applications', (req, res, next) => {
 });
 
 app.post('/admins/notificate', (req, res, next) => {
+  console.log(req.body);
   const uuid = req.body.request.data.select;
   const sql = `SELECT user.email, user.first_name, user.last_name FROM error_user INNER JOIN user ON user.id = error_user.userId WHERE errorId = '${uuid}'`;
   connection.query(sql, (err, result) => {
@@ -107,7 +108,16 @@ app.get('/forms/:formId', (req, res) => {
 });
 
 app.post('/forms', (req, res) => {
-  return res.send({ data: req.body })
+  const form = {
+    name: req.body.name || "form",
+    schema: JSON.stringify(req.body)
+  };
+  
+  connection.query('INSERT INTO form SET ?', form, (err, result) => {
+    if(err) next(err);
+
+    res.send({ message: "Form successfully saved." })
+  });
 });
 
 app.use((err, req, res, next) => {

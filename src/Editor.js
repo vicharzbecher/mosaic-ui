@@ -41,7 +41,9 @@ class Editor extends React.Component {
             ref={this.saveButtonText}
             //onChange={(schema) => {console.log("Changed"); console.log(JSON.stringify(schema));}}
             saveForm={(form) => {
-              axios.post('http://ec2-3-89-92-22.compute-1.amazonaws.com/forms/update', form).then((response)=>{console.log(response); })
+              axios.post('http://ec2-3-89-92-22.compute-1.amazonaws.com/forms/update', form).then((response)=>{
+                console.log(response); 
+                alert('Form successfully updated');})
             }}
             ></FormEdit>
         </div>

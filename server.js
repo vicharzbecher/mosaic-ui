@@ -90,7 +90,19 @@ app.get('/forms/:formId', (req, res) => {
   connection.query(sql, (err, result) => {
     if (err) next(err)
 
-    res.send({ data: result });
+    const schema = JSON.parse(result[0].schema);
+
+    const jsonSchema = {
+      _id: result[0].id,
+      title:  schema.title,
+      type: schema.display,
+      display: schema.display,
+      components: schema.components,
+      name: result[0].name,
+      path: schema.path,
+    }
+
+    res.send(jsonSchema);
   });
 });
 

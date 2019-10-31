@@ -37,17 +37,7 @@ connection.connect((err) => {
 app.get('/', (req, res) => res.send({ message: 'hello' }));
 
 app.get('/uuids', (req, res, next) => {
-  connection.query('SELECT uuid from customer_notifications', (err, result) => {
-    if (err) next(err)
-    return res.send({ data: result });
-  })
-});
-
-app.get('/uuids/:uuid', (req, res, next) => {
-  const uuid = req.params.uuid;
-  const sql = `SELECT * from customer_notifications WHERE uuid = '${uuid}'`;
-
-  connection.query(sql, (err, result) => {
+  connection.query('SELECT * from customer_notifications', (err, result) => {
     if (err) next(err)
     return res.send({ data: result });
   })

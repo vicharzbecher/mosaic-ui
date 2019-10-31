@@ -20,8 +20,7 @@ You will receive a url, for example [https://mosaic.localtunnel.me](https://mosa
 
 ### API endpoints
 
-* GET /codes
-* GET /events
+* GET /uuids
 * GET /applications
 * GET /form/:id
 * POST /form

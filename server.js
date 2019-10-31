@@ -133,6 +133,17 @@ app.get('/licenses', (req, res, next) => {
   })
 });
 
+app.post('/licenses', (req, res, next) => {
+  const licenseId = req.body.data.license.license_id;
+  const seats = req.body.data.license.seats;
+
+  connection.query('UPDATE licenses SET seats = ? WHERE license_id = ?', [seats, licenseId], (err, result) => {
+    if(err) next(err);
+
+    res.send({ message: "License successfully updated." })
+  });
+});
+
 app.use((err, req, res, next) => {
   res.status(err.status || 500).json({
     error: {

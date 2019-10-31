@@ -17,11 +17,10 @@ const connection = mysql.createConnection({
 });
 
 const transporter = nodemailer.createTransport({
-  host: "smtp.mailtrap.io",
-  port: 2525,
+  service: 'SendGrid', // no need to set host or port etc.
   auth: {
-    user: process.env.MAILTRAP_SMTP_USERNAME,
-    pass: process.env.MAILTRAP_SMTP_PASSWORD
+    user: process.env.SENDGRID_USERNAME,
+    pass: process.env.SENDGRID_PASSWORD
   }
 });
 
@@ -44,9 +43,8 @@ app.get('/uuids', (req, res, next) => {
 });
 
 app.post('/admins/notificate', (req, res, next) => {
-  const { uuid, eventType, appSource } = req.body.request.data;
-  const sql = `SELECT user.email, user.first_name, user.last_name FROM error_user INNER JOIN user ON user.id = error_user.userId WHERE errorId = '${uuid}'`;
-  connection.query(sql, (err, result) => {
+  const { uuid, eventType = 'No event', appSource = 'No source' } = req.body.request.data;
+  connection.query('SELECT user.email, user.first_name, user.last_name FROM uuid_users INNER JOIN user ON user.id = uuid_users.user_id WHERE uuid = ?', [uuid], (err, result) => {
     if (err) next(err)
 
     const emails = result.map(user => user.email).join(', ');
@@ -69,7 +67,7 @@ app.post('/admins/notificate', (req, res, next) => {
   });
 });
 
-app.get('/forms/:formId', (req, res) => {
+app.get('/forms/:formId', (req, res, next) => {
   const formId = req.params.formId;
   const sql = `SELECT * FROM form WHERE id = ${formId}`
   

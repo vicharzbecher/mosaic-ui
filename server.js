@@ -43,7 +43,7 @@ app.get('/uuids', (req, res, next) => {
 });
 
 app.post('/admins/notificate', (req, res, next) => {
-  const { uuid: { uuid }, eventType = 'No event', appSource = 'No source' } = req.body.data;
+  const { uuid: { uuid }, eventType = 'No event', sourceApplication = 'No source' } = req.body.data;
   connection.query('SELECT user.email, user.first_name, user.last_name FROM uuid_users INNER JOIN user ON user.id = uuid_users.user_id WHERE uuid = ?', [uuid], (err, result) => {
     if (err) next(err)
 
@@ -52,7 +52,7 @@ app.post('/admins/notificate', (req, res, next) => {
       from: '"Mosaic Support" <support@mosaicui.com>',
       to: emails,
       subject: "Customer Notification Admin - Error Support",
-      text: `There was an error ${uuid} during ${eventType} in ${appSource}`
+      text: `There was an error ${uuid} during ${eventType} from ${sourceApplication} application`
     };
 
     transporter.sendMail(mailOptions, (err, info) => {

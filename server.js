@@ -58,8 +58,7 @@ app.get('/applications', (req, res, next) => {
 });
 
 app.post('/admins/notificate', (req, res, next) => {
-  console.log(req.body);
-  const uuid = req.body.request.data.select;
+  const { uuid, eventType, appSource } = req.body.request.data;
   const sql = `SELECT user.email, user.first_name, user.last_name FROM error_user INNER JOIN user ON user.id = error_user.userId WHERE errorId = '${uuid}'`;
   connection.query(sql, (err, result) => {
     if (err) next(err)
@@ -69,7 +68,7 @@ app.post('/admins/notificate', (req, res, next) => {
       from: '"Mosaic Support" <support@mosaicui.com>',
       to: emails,
       subject: "Customer Notification Admin - Error Support",
-      text: "This is an mosaic UI email test"
+      text: `There was an error ${uuid} during ${eventType} in ${appSource}`
     };
 
     transporter.sendMail(mailOptions, (err, info) => {
@@ -127,5 +126,28 @@ app.use((err, req, res, next) => {
     }
   })
 })
+
+app.post('/forms/update', (req, res, next) => {
+  const formId = req.body._id;
+  const schemaObj = {
+    title:  req.body.title,
+    type: req.body.type,
+    display: req.body.display,
+    components: req.body.components,
+    name: req.body.name,
+    path: req.body.path,
+  }
+
+  const form = {
+    name: req.body.name,
+    schema: JSON.stringify(schemaObj)
+  };
+
+  connection.query('UPDATE form SET ? WHERE id = ?', [form, formId], (err, result) => {
+    if(err) next(err);
+
+    res.send({ message: "Form successfully update." })
+  });
+});
 
 app.listen(8080, () => console.log("Server running on port 8080"));

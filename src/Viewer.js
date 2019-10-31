@@ -4,7 +4,7 @@ import {useParams} from 'react-router-dom';
 
 function Viewer() {
     const {formId} = useParams();
-    const url = `http://localhost:8080/forms/${formId}`;
+    const url = `http://ec2-3-89-92-22.compute-1.amazonaws.com/forms/${formId}`;
     console.log(url);
   return (
     <div className="Editor">

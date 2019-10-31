@@ -14,7 +14,7 @@ function New() {
           saveText="Save form"
           //onChange={(schema) => {console.log("Changed"); console.log(JSON.stringify(schema));}}
           saveForm={(form) => {
-            axios.post('http://localhost:8080/forms/', form).then((response)=>{console.log(response)})
+            axios.post('http://ec2-3-89-92-22.compute-1.amazonaws.com/forms/', form).then((response)=>{console.log(response)})
           }}
           ></FormEdit>
       </div>

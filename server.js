@@ -98,7 +98,22 @@ app.get('/forms', (req, res) => {
   connection.query('SELECT * FROM form', (err, results) => {
     if(err) next(err);
 
-    res.send({ data: results });
+    const forms = results.map(form => {
+      const schema = JSON.parse(form.schema);
+
+      return {
+        _id: form.id,
+        name: form.title,
+        title: schema.title,
+        type: schema.display,
+        display: schema.display,
+        components: schema.components,
+        name: '',
+        path: ''
+      }
+    })
+
+    res.send({ data: forms });
   });
 });
 

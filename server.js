@@ -168,7 +168,24 @@ app.get('/customer/notifications', (req, res, next) => {
 });
 
 app.post('/customer/notifications', (req, res, next) => {
-  res.send({ message: "Success" });
+  const { email: { email }, eventType = 'No event', sourceApplication = 'No source' } = req.body.data;
+  
+  const mailOptions = {
+    from: '"Mosaic Support" <support@mosaicui.com>',
+    to: email,
+    subject: "Customer Notification Admin - Error Support",
+    text: `There was an error during ${eventType} from ${sourceApplication} Application`
+  };
+
+  transporter.sendMail(mailOptions, (err, info) => {
+    if(err){
+      console.log(err);
+      next(err)
+    }
+
+    console.log('Message sent: %s', info.messageId);
+    return res.send({ message: "Email successfully sent." });
+  });
 });
 
 app.use((err, req, res, next) => {

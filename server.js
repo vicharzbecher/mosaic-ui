@@ -94,6 +94,14 @@ app.get('/forms/:formId(\\d+)', (req, res, next) => {
   });
 });
 
+app.get('/forms', (req, res) => {
+  connection.query('SELECT * FROM form', (err, results) => {
+    if(err) next(err);
+
+    res.send({ data: results });
+  });
+});
+
 app.post('/forms', (req, res) => {
   const form = {
     name: req.body.name || "form",

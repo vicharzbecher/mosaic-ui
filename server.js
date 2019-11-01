@@ -89,7 +89,7 @@ app.get('/forms/:formId(\\d+)', (req, res, next) => {
   
       return res.send(jsonSchema);
     } else{
-      return res.send({ message: "Not results." })
+      return res.send({ message: "Not results." });
     }
   });
 });
@@ -103,7 +103,7 @@ app.post('/forms', (req, res) => {
   connection.query('INSERT INTO form SET ?', form, (err, result) => {
     if(err) next(err);
 
-    res.send({ id: result.insertId, message: "Form successfully saved." })
+    res.send({ id: result.insertId, message: "Form successfully saved." });
   });
 });
 
@@ -132,7 +132,7 @@ app.post('/forms/update', (req, res, next) => {
 
 app.get('/licenses', (req, res, next) => {
   connection.query('SELECT * from licenses', (err, result) => {
-    if (err) next(err)
+    if (err) next(err);
     return res.send({ data: result });
   })
 });
@@ -144,13 +144,13 @@ app.post('/licenses', (req, res, next) => {
   connection.query('UPDATE licenses SET seats = ? WHERE license_id = ?', [seats, licenseId], (err, result) => {
     if(err) next(err);
 
-    res.send({ message: "License successfully updated." })
+    res.send({ message: "License successfully updated." });
   });
 });
 
 app.get('/customer/notifications', (req, res, next) => {
   connection.query('SELECT * from customer_notification', (err, result) => {
-    if (err) next(err)
+    if (err) next(err);
 
     if(result.length > 0){
       const response = result.map(item => ({
@@ -165,6 +165,10 @@ app.get('/customer/notifications', (req, res, next) => {
       return res.send({ message: 'No results.'});
     }
   })
+});
+
+app.post('/customer/notifications', (req, res, next) => {
+  res.send({ message: "Success" });
 });
 
 app.use((err, req, res, next) => {

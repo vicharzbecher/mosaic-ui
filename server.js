@@ -36,7 +36,7 @@ connection.connect((err) => {
 app.get('/', (req, res) => res.send({ message: 'hello' }));
 
 app.get('/uuids', (req, res, next) => {
-  connection.query('SELECT * from customer_notification', (err, result) => {
+  connection.query('SELECT uuid, source_applications, event_type FROM customer_notification', (err, result) => {
     if (err) next(err)
     return res.send({ data: result });
   })
@@ -67,18 +67,14 @@ app.post('/admins/notificate', (req, res, next) => {
   });
 });
 
-app.get('/forms/:formId', (req, res, next) => {
-  if(typeof req.query.formId !== 'number') {
-    return res.status(404).send({ message: 'Form not found'});
-  }
-
+app.get('/forms/:formId(\\d+)', (req, res, next) => {
   const formId = req.params.formId;
   const sql = `SELECT * FROM form WHERE id = ${formId}`
   
   connection.query(sql, (err, result) => {
     if (err) next(err)
 
-    if (!result.length > 0){
+    if (result.length > 0){
       const schema = JSON.parse(result[0].schema);
   
       const jsonSchema = {

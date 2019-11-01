@@ -36,7 +36,7 @@ connection.connect((err) => {
 app.get('/', (req, res) => res.send({ message: 'hello' }));
 
 app.get('/uuids', (req, res, next) => {
-  connection.query('SELECT * from customer_notifications', (err, result) => {
+  connection.query('SELECT uuid, source_applications, event_type FROM customer_notification', (err, result) => {
     if (err) next(err)
     return res.send({ data: result });
   })
@@ -67,16 +67,14 @@ app.post('/admins/notificate', (req, res, next) => {
   });
 });
 
-app.get('/forms/:formId', (req, res, next) => {
+app.get('/forms/:formId(\\d+)', (req, res, next) => {
   const formId = req.params.formId;
   const sql = `SELECT * FROM form WHERE id = ${formId}`
   
   connection.query(sql, (err, result) => {
     if (err) next(err)
 
-    if (!result.length){
-      res.send({ message: "Form not found" })
-    } else{
+    if (result.length > 0){
       const schema = JSON.parse(result[0].schema);
   
       const jsonSchema = {
@@ -89,9 +87,10 @@ app.get('/forms/:formId', (req, res, next) => {
         path: schema.path,
       }
   
-      res.send(jsonSchema);
+      return res.send(jsonSchema);
+    } else{
+      return res.send({ message: "Not results." })
     }
-
   });
 });
 
@@ -157,4 +156,23 @@ app.use((err, req, res, next) => {
   })
 })
 
-app.listen(8080, () => console.log("Server running on port 8080"));
+app.get('/customer/notifications', (req, res, next) => {
+  connection.query('SELECT * from customer_notification', (err, result) => {
+    if (err) next(err)
+
+    if(result.length > 0){
+      const response = result.map(item => ({
+        uuid: item.uuid,
+        event_type: item.event_type,
+        source_application: item.source_applications,
+        email: (JSON.parse(item.comunication_payload)).to.emailAddress
+      }));
+
+      return res.send({ data: response });
+    } else {
+      return res.send({ message: 'No results.'});
+    }
+  })
+});
+
+app.listen(8080, () => console.log('Server running on port 8080'));

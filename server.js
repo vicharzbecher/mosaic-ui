@@ -148,14 +148,6 @@ app.post('/licenses', (req, res, next) => {
   });
 });
 
-app.use((err, req, res, next) => {
-  res.status(err.status || 500).json({
-    error: {
-      message: err.message || "Internal Server Error"
-    }
-  })
-})
-
 app.get('/customer/notifications', (req, res, next) => {
   connection.query('SELECT * from customer_notification', (err, result) => {
     if (err) next(err)
@@ -174,5 +166,13 @@ app.get('/customer/notifications', (req, res, next) => {
     }
   })
 });
+
+app.use((err, req, res, next) => {
+  res.status(err.status || 500).json({
+    error: {
+      message: err.message || "Internal Server Error"
+    }
+  })
+})
 
 app.listen(8080, () => console.log('Server running on port 8080'));

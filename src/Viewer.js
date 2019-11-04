@@ -1,17 +1,20 @@
 import React from 'react';
 import {Form} from 'react-formio';
 import axios from 'axios';
+import {get} from 'lodash';
 
 class Viewer extends React.Component {
     constructor(props) {
         super(props);
+        this.env = process.env;
+        this.API_URL = get(this.env, 'REACT_APP_API_URL', 'http://localhost:8080');
         this.state = {form: '', loading: true};
     }
 
     async componentDidMount() {
         
         const formId = this.props.match.params.formId;
-        const url = `http://ec2-3-89-92-22.compute-1.amazonaws.com/forms/${formId}`;
+        const url = `${this.API_URL}forms/${formId}`;
         const result = await axios.get(url);
         console.log(result.data);
         this.setState({form: result.data, loading: false, message: ''});

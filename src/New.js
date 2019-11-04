@@ -1,10 +1,13 @@
 import React, {useState} from 'react';
 import {FormEdit} from 'react-formio';
 import axios from 'axios';
+import {get} from 'lodash';
 
 function New() {
 
   const [message, setMessage] = useState('');
+  const env = process.env;
+  const API_URL = get(env, 'REACT_APP_API_URL', 'http://localhost:8080');
 
   return (
     <div className="App">
@@ -17,7 +20,7 @@ function New() {
           saveText="Save form"
           //onChange={(schema) => {console.log("Changed"); console.log(JSON.stringify(schema));}}
           saveForm={(form) => {
-            axios.post('http://ec2-3-89-92-22.compute-1.amazonaws.com/forms/', form).then((response)=>{console.log(response);
+            axios.post(`${API_URL}forms/`, form).then((response)=>{console.log(response);
               setMessage(`${response.data.message} ID: ${response.data.id}`);
             })
           }}

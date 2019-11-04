@@ -171,8 +171,13 @@ app.post('/licenses', (req, res, next) => {
   });
 });
 
-app.get('/customer/notifications', (req, res, next) => {
-  connection.query('SELECT * from customer_notification', (err, result) => {
+app.get('/customer/notifications/', (req, res, next) => {
+  const query = req.query.email;
+  let sql = 'SELECT * FROM customer_notification LIMIT 10';
+  if(query) {
+    sql = `SELECT * FROM customer_notification WHERE comunication_payload LIKE "%${query}%" LIMIT 10`;
+  } 
+  connection.query(sql, (err, result) => {
     if (err) next(err);
 
     if(result.length > 0){
@@ -185,7 +190,7 @@ app.get('/customer/notifications', (req, res, next) => {
 
       return res.send({ data: response });
     } else {
-      return res.send({ message: 'No results.'});
+      return res.send({ data: [], message: 'No results.'});
     }
   })
 });
@@ -201,12 +206,8 @@ app.post('/customer/notifications', (req, res, next) => {
   };
 
   transporter.sendMail(mailOptions, (err, info) => {
-    if(err){
-      console.log(err);
-      next(err)
-    }
+    if(err) next(err)
 
-    console.log('Message sent: %s', info.messageId);
     return res.send({ message: "Email successfully sent." });
   });
 });

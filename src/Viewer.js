@@ -2,6 +2,7 @@ import React from 'react';
 import {Form} from 'react-formio';
 import axios from 'axios';
 import {get} from 'lodash';
+import Loader from './Loader';
 
 class Viewer extends React.Component {
     constructor(props) {
@@ -22,9 +23,7 @@ class Viewer extends React.Component {
 
     render() {
         const {form, loading} = this.state;
-        if(loading) return (
-            <div className="alert alert-success">Loading, please wait a little<br/> If it is taking to much? try <a href=".">reloading</a> this page</div>
-        );
+        if(loading) return <Loader/>
 
         return (
             <div className="Editor">

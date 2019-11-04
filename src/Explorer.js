@@ -17,9 +17,9 @@ class Explorer extends React.Component {
   async componentDidMount() {
     console.log(this.props);
     //const formId = this.props.match.params.formId;
-    const url = `${this.API_URL}forms`;
+    const url = `${this.API_URL}/forms`;
     const result = await axios.get(url);
-    console.log(result.data);
+    console.log('Result', result.data);
     this.setState({forms: result.data, loading: false});
   }
 ß
@@ -32,6 +32,15 @@ class Explorer extends React.Component {
       <div className="alert alert-success">Loading, please wait a little<br/> If it is taking to much? try <a href=".">reloading</a> this page</div>
     );
     
+    console.log('forms', forms.data);
+    const gridConfig = {
+      forms: forms.data,
+      pagination: {
+        page: 0
+      }
+    }
+    console.log('Config', gridConfig);
+
     return (
       
       <div className="App">
@@ -42,10 +51,25 @@ class Explorer extends React.Component {
         </header>
 
         <div className="panel panel-default">
-          <FormGrid forms={forms}></FormGrid>
+          <FormGrid forms={gridConfig} onAction={(event, action) => {this.handleAction(action, event);
+            console.log(event, action)}}></FormGrid>
         </div>
       </div>
     );
+  }
+
+  handleAction (action, event) {
+    const id = get(event, '_id', '');
+    switch (action){
+      case 'view': 
+        window.open(`./viewer/${id}`);
+        break;
+      case 'editor':
+        window.open(`./editor/${id}`)
+        break;
+      default:
+        return;
+    }
   }
 
   

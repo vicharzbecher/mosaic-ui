@@ -48,7 +48,7 @@ class Editor extends React.Component {
             saveText="Save form"
             //onChange={(schema) => {console.log("Changed"); console.log(JSON.stringify(schema));}}
             saveForm={(form) => {
-              axios.post(`${this.API_URL}forms/update`, form).then((response)=>{
+              axios.post(`${this.API_URL}/forms/update`, form).then((response)=>{
                 this.setState({message: `Form successfully saved: ${form._id}`});
                 setTimeout(() => {
                   this.setState({message: ''});

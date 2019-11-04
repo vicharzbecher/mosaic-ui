@@ -14,7 +14,7 @@ class Viewer extends React.Component {
     async componentDidMount() {
         
         const formId = this.props.match.params.formId;
-        const url = `${this.API_URL}forms/${formId}`;
+        const url = `${this.API_URL}/forms/${formId}`;
         const result = await axios.get(url);
         console.log(result.data);
         this.setState({form: result.data, loading: false, message: ''});

@@ -172,7 +172,9 @@ app.post('/licenses', (req, res, next) => {
 });
 
 app.get('/customer/notifications', (req, res, next) => {
-  connection.query('SELECT * from customer_notification', (err, result) => {
+  const query = req.query.email;
+  connection.query("SELECT * from customer_notification WHERE json_extract(comunication_payload, '$.to.emailAddress')  LIKE LOWER(?)", `%${query}%`, (err, result) => {
+    
     if (err) next(err);
 
     if(result.length > 0){

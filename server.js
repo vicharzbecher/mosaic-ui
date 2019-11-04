@@ -171,12 +171,15 @@ app.post('/licenses', (req, res, next) => {
   });
 });
 
-app.get('/customer/notifications/', (req, res, next) => {
+
+app.get('/customer/notifications', (req, res, next) => {
   const query = req.query.email;
   let sql = 'SELECT * FROM customer_notification LIMIT 10';
+
   if(query) {
-    sql = `SELECT * FROM customer_notification WHERE comunication_payload LIKE "%${query}%" LIMIT 10`;
-  } 
+    sql = `SELECT * from customer_notification WHERE json_extract(comunication_payload, '$.to.emailAddress') LIKE LOWER(${query})`;
+  }
+
   connection.query(sql, (err, result) => {
     if (err) next(err);
 

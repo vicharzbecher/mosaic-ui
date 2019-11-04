@@ -1,53 +1,38 @@
 const express = require('express');
-const mysql = require('mysql');
-const dotenv = require('dotenv').config();
 const cors = require('cors');
 const nodemailer = require('nodemailer');
+const pool = require('./database');
 
 const app = express();
 app.use(express.json())
 app.use(cors());
 
-const connection = mysql.createConnection({
-  host: process.env.HOST,
-  port: process.env.PORT,
-  user: process.env.USERNAME,
-  password: process.env.PASSWORD,
-  database: process.env.DATABASE
-});
-
 const transporter = nodemailer.createTransport({
-  service: 'SendGrid', // no need to set host or port etc.
+  service: 'SendGrid',
   auth: {
     user: process.env.SENDGRID_USERNAME,
     pass: process.env.SENDGRID_PASSWORD
   }
 });
 
-connection.connect((err) => {
-  if (err) {
-    console.error('error connecting: ' + err.stack);
-    return;
-  }
- 
-  console.log('connected as id ' + connection.threadId);
-});
-
 app.get('/', (req, res) => res.send({ message: 'hello' }));
 
 app.get('/uuids', (req, res, next) => {
-  connection.query('SELECT uuid, source_applications, event_type FROM customer_notification', (err, result) => {
-    if (err) next(err)
-    return res.send({ data: result });
-  })
+  const sql = 'SELECT uuid, source_applications, event_type FROM customer_notification';
+  pool.query(sql, (error, results) => {
+    if (error) next(error);
+    return res.send({ data: results });
+  });
 });
 
 app.post('/admins/notificate', (req, res, next) => {
   const { uuid: { uuid }, eventType = 'No event', sourceApplication = 'No source' } = req.body.data;
-  connection.query('SELECT user.email, user.first_name, user.last_name FROM uuid_users INNER JOIN user ON user.id = uuid_users.user_id WHERE uuid = ?', [uuid], (err, result) => {
-    if (err) next(err)
+  const sql = 'SELECT user.email, user.first_name, user.last_name FROM uuid_users INNER JOIN user ON user.id = uuid_users.user_id WHERE uuid = ?';
 
-    const emails = result.map(user => user.email).join(', ');
+  pool.query(sql, (error, results) => {
+    if (error) next(error);
+    
+    const emails = results.map(user => user.email).join(', ');
     const mailOptions = {
       from: '"Mosaic Support" <support@mosaicui.com>',
       to: emails,
@@ -69,21 +54,21 @@ app.post('/admins/notificate', (req, res, next) => {
 
 app.get('/forms/:formId(\\d+)', (req, res, next) => {
   const formId = req.params.formId;
-  const sql = `SELECT * FROM form WHERE id = ${formId}`
-  
-  connection.query(sql, (err, result) => {
-    if (err) next(err)
+  const sql = `SELECT * FROM form WHERE id = ${formId}`;
 
-    if (result.length > 0){
-      const schema = JSON.parse(result[0].schema);
+  pool.query(sql, (error, results) => {
+    if (error) next(error);
+
+    if (results.length > 0){
+      const schema = JSON.parse(results[0].schema);
   
       const jsonSchema = {
-        _id: result[0].id,
+        _id: results[0].id,
         title:  schema.title,
         type: schema.display,
         display: schema.display,
         components: schema.components,
-        name: result[0].name,
+        name: results[0].name,
         path: schema.path,
       }
   
@@ -95,23 +80,24 @@ app.get('/forms/:formId(\\d+)', (req, res, next) => {
 });
 
 app.get('/forms', (req, res) => {
-  connection.query('SELECT * FROM form', (err, results) => {
-    if(err) next(err);
+  pool.query('SELECT * FROM form', (error, results) => {
+    if (error) next(error);
 
     const forms = results.map(form => {
       const schema = JSON.parse(form.schema);
 
       return {
         _id: form.id,
-        name: form.title,
-        title: schema.title,
         type: schema.display,
+        title: schema.title,
+        tags: [],
+        path: '',
+        name: form.title,
+        modified: '',
         display: schema.display,
-        components: schema.components,
-        name: '',
-        path: ''
-      }
-    })
+        components: schema.components
+      };
+    });
 
     res.send({ data: forms });
   });
@@ -122,11 +108,11 @@ app.post('/forms', (req, res) => {
     name: req.body.name || "form",
     schema: JSON.stringify(req.body)
   };
-  
-  connection.query('INSERT INTO form SET ?', form, (err, result) => {
-    if(err) next(err);
 
-    res.send({ id: result.insertId, message: "Form successfully saved." });
+  pool.query('INSERT INTO form SET ?', form, (error, results) => {
+    if (error) next(error);
+
+    res.send({ id: results.insertId, message: "Form successfully saved." });
   });
 });
 
@@ -146,26 +132,27 @@ app.post('/forms/update', (req, res, next) => {
     schema: JSON.stringify(schemaObj)
   };
 
-  connection.query('UPDATE form SET ? WHERE id = ?', [form, formId], (err, result) => {
-    if(err) next(err);
+  pool.query('UPDATE form SET ? WHERE id = ?', [form, formId], (error, results) => {
+    if (error) next(error);
 
-    res.send({ message: "Form successfully updated." })
+    res.send({ message: "Form successfully updated." });
   });
 });
 
 app.get('/licenses', (req, res, next) => {
-  connection.query('SELECT * from licenses', (err, result) => {
-    if (err) next(err);
-    return res.send({ data: result });
-  })
+  pool.query('SELECT * from licenses', (error, results) => {
+    if (error) next(error);
+
+    return res.send({ data: results });
+  });
 });
 
 app.post('/licenses', (req, res, next) => {
   const licenseId = req.body.data.license.license_id;
   const seats = req.body.data.seats;
 
-  connection.query('UPDATE licenses SET seats = ? WHERE license_id = ?', [seats, licenseId], (err, result) => {
-    if(err) next(err);
+  pool.query('UPDATE licenses SET seats = ? WHERE license_id = ?', [seats, licenseId], (error, results) => {
+    if (error) next(error);
 
     res.send({ message: "License successfully updated." });
   });
@@ -177,14 +164,14 @@ app.get('/customer/notifications', (req, res, next) => {
   let sql = 'SELECT * FROM customer_notification LIMIT 10';
 
   if(query) {
-    sql = `SELECT * from customer_notification WHERE json_extract(comunication_payload, '$.to.emailAddress') LIKE LOWER(${query})`;
+    sql = `SELECT * FROM customer_notification WHERE JSON_EXTRACT(comunication_payload, '$.to.emailAddress') LIKE "%${query}%" LIMIT 10`;
   }
 
-  connection.query(sql, (err, result) => {
-    if (err) next(err);
-
-    if(result.length > 0){
-      const response = result.map(item => ({
+  pool.query(sql, (error, results) => {
+    if (error) next(error);
+    
+    if(results.length > 0){
+      const response = results.map(item => ({
         uuid: item.uuid,
         event_type: item.event_type,
         source_application: item.source_applications,
@@ -195,7 +182,7 @@ app.get('/customer/notifications', (req, res, next) => {
     } else {
       return res.send({ data: [], message: 'No results.'});
     }
-  })
+  });
 });
 
 app.post('/customer/notifications', (req, res, next) => {
@@ -221,6 +208,6 @@ app.use((err, req, res, next) => {
       message: err.message || "Internal Server Error"
     }
   })
-})
+});
 
 app.listen(8080, () => console.log('Server running on port 8080'));

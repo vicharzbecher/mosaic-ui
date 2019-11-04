@@ -140,6 +140,16 @@ app.post('/forms/update', (req, res, next) => {
   });
 });
 
+app.post('/forms/delete', (req, res, next) => {
+  const formId = req.body._id;
+
+  pool.query('DELETE FROM form WHERE id = ?', formId, (error, results) => {
+    if (error) next(error);
+
+    res.send({ message: "Form successfully deleted." });
+  });
+});
+
 app.get('/licenses', (req, res, next) => {
   pool.query('SELECT * from licenses', (error, results) => {
     if (error) next(error);

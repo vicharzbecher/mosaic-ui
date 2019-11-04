@@ -2,7 +2,6 @@ const express = require('express');
 const cors = require('cors');
 const nodemailer = require('nodemailer');
 const pool = require('./database');
-// const springdaleDB = require('./springdaleDatabase');
 
 const app = express();
 app.use(express.json())
@@ -140,10 +139,10 @@ app.post('/forms/update', (req, res, next) => {
   });
 });
 
-app.post('/forms/delete', (req, res) => {
+app.post('/forms/delete', (req, res, next) => {
   const formId = req.body._id;
 
-  pool.query('DELETE FROM form WHERE id = ?', formId, (error, results) => {
+  pool.query('DELETE FROM form WHERE id = ?', [formId], (error, results) => {
     if (error) next(error);
 
     res.send({ message: "Form successfully deleted." });

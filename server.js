@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const nodemailer = require('nodemailer');
 const pool = require('./database');
+const springdaleDB = require('./springdaleDatabase');
 
 const app = express();
 app.use(express.json())
@@ -161,21 +162,21 @@ app.post('/licenses', (req, res, next) => {
 
 app.get('/customer/notifications', (req, res, next) => {
   const query = req.query.email;
-  let sql = 'SELECT * FROM customer_notification LIMIT 10';
+  let sql = 'SELECT * FROM customer_notification WHERE communication_payload IS NOT NULL LIMIT 10';
 
   if(query) {
-    sql = `SELECT * FROM customer_notification WHERE JSON_EXTRACT(comunication_payload, '$.to.emailAddress') LIKE "%${query}%" LIMIT 10`;
+    sql = `SELECT * FROM customer_notification WHERE communication_payload IS NOT NULL AND JSON_EXTRACT(communication_payload, '$.to.emailAddress') LIKE "%${query}%" LIMIT 10`;
   }
 
-  pool.query(sql, (error, results) => {
+  springdaleDB.query(sql, (error, results) => {
     if (error) next(error);
     
     if(results.length > 0){
       const response = results.map(item => ({
-        uuid: item.uuid,
+        event_id: item.event_id,
         event_type: item.event_type,
-        source_application: item.source_applications,
-        email: (JSON.parse(item.comunication_payload)).to.emailAddress
+        source_application: item.source_application,
+        email: (JSON.parse(item.communication_payload)).to.emailAddress
       }));
 
       return res.send({ data: response });

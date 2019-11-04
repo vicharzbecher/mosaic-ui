@@ -170,7 +170,7 @@ app.get('/customer/notifications', (req, res, next) => {
 
   springdaleDB.query(sql, (error, results) => {
     if (error) next(error);
-    
+
     if(results.length > 0){
       const response = results.map(item => ({
         event_id: item.event_id,

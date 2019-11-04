@@ -3,6 +3,9 @@ const dotenv = require('dotenv').config();
 
 const pool = mysql.createPool({
     connectionLimit: 10,
+    connectTimeout: 60 * 60 * 1000,
+    acquireTimeout: 60 * 60 * 1000,
+    timeout: 60 * 60 * 1000,
     host: 'djis-dev-springdale-cluster.cluster-ro-ctf62qfyqh4b.us-east-1.rds.amazonaws.com',
     port: '3306',
     user: 'spg_admin',

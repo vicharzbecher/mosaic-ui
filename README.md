@@ -2,7 +2,8 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ## Setup
 - Create .env file in project root
-- Set DEV_URL value to your personal subdomain (Ex. DEV_URL=mosaic-ui-myname)
+- Set REACT_APP_API_URL as your API host
+- Set REACT_APP_DEV_URL value to your personal subdomain (Ex. DEV_URL=mosaic-ui-myname)
 - Run yarn install
 - Run yarn dev
 

@@ -2,9 +2,12 @@ const express = require('express');
 const cors = require('cors');
 const nodemailer = require('nodemailer');
 const pool = require('./database');
+const bodyParser = require('body-parser');
 
 const app = express();
-app.use(express.json())
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.text());
+app.use(bodyParser.json());
 app.use(cors());
 
 const transporter = nodemailer.createTransport({

@@ -27,22 +27,6 @@ function App() {
                     Forms
                   </Link>
                 </li>
-                {/* <li className="nav-item">
-                  <Link to="/add">
-                    <i className="fa fa-plus-square"></i>&nbsp;New Form
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link to="/explorer">
-                    <i className="fa fa-search"></i>&nbsp;Explorer
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link to="/editor/1">Editor</Link>
-                </li>
-                <li>
-                  <Link to="/viewer/1">Viewer</Link>
-                </li> */}
               </ul>
             </div>
           </nav>

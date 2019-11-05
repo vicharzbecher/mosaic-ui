@@ -18,7 +18,7 @@ const transporter = nodemailer.createTransport({
 app.get('/', (req, res) => res.send({ message: 'hello' }));
 
 app.get('/uuids', (req, res, next) => {
-  const sql = 'SELECT uuid, source_applications, event_type FROM customer_notification';
+  const sql = 'SELECT uuid, source_applications, event_type FROM customer_notifications';
   pool.query(sql, (error, results) => {
     if (error) next(error);
     return res.send({ data: results });
@@ -171,10 +171,10 @@ app.post('/licenses', (req, res, next) => {
 
 app.get('/customer/notifications', (req, res, next) => {
   const query = req.query.email;
-  let sql = 'SELECT * FROM customer_notification WHERE comunication_payload IS NOT NULL LIMIT 10';
+  let sql = 'SELECT event_id, event_type, source_application, communication_payload FROM customer_notification WHERE communication_payload IS NOT NULL LIMIT 10';
 
   if(query) {
-    sql = `SELECT * FROM customer_notification WHERE comunication_payload IS NOT NULL AND JSON_EXTRACT(comunication_payload, '$.to.emailAddress') LIKE "%${query}%" LIMIT 10`;
+    sql = `SELECT event_id, event_type, source_application, communication_payload FROM customer_notification WHERE communication_payload IS NOT NULL AND JSON_EXTRACT(communication_payload, '$.to.emailAddress') LIKE "%${query}%" LIMIT 10`;
   }
 
   pool.query(sql, (error, results) => {
@@ -184,8 +184,8 @@ app.get('/customer/notifications', (req, res, next) => {
       const response = results.map(item => ({
         event_id: item.event_id,
         event_type: item.event_type,
-        source_application: item.source_applications,
-        email: (JSON.parse(item.comunication_payload)).to.emailAddress
+        source_application: item.source_application,
+        email: (JSON.parse(item.communication_payload)).to.emailAddress
       }));
 
       return res.send({ data: response });

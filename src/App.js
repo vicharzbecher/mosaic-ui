@@ -1,59 +1,61 @@
-import React from 'react';
-import Viewer from './Viewer';
-import Editor from './Editor';
-import Explorer from './Explorer';
-import New from './New';
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link,
-} from "react-router-dom";
-import './styles.scss'
-import './App.css';
-
+import React from "react";
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import Viewer from "./Viewer";
+import Editor from "./Editor";
+import New from "./New";
+import FormList from "./FormList";
+import "./styles.scss";
+import "./App.css";
 
 function App() {
   return (
-    
-    
     <Router>
-      <h1 style={{margin: 'auto', width: 400}}>Mosaic Form Builder</h1>
-      <hr/>
-      <div>
-        <nav>
-          <ul>
-            <li>
-              <Link to="/"><i className="fa fa-home"></i>&nbsp;Home</Link>
-            </li>
-            <li>
-              <Link to="/add"><i className="fa fa-plus-square"></i>&nbsp;New Form</Link>
-            </li>
-            <li>
-              <Link to="/explorer"><i className="fa fa-search"></i>&nbsp;Explorer</Link>
-            </li>
-            <li>
-              <Link to="/editor/1">Editor</Link>
-            </li>
-            <li>
-              <Link to="/viewer/1">Viewer</Link>
-            </li>
-          </ul>
-        </nav>
+      <nav className="navbar navbar-dark sticky-top bg-primary flex-md-nowrap p-0">
+        <Link to="/" className="navbar-brand col-sm-3 col-md-2 mr-0">
+          Mosaic Form Builder
+        </Link>
+      </nav>
 
-        {/* A <Switch> looks through its children <Route>s and
-            renders the first one that matches the current URL. */}
-        <Switch>
-          <Route path="/editor/:formId" component={Editor} />
-          
-          <Route path="/viewer/:formId" component={Viewer} />
+      <div className="container-fluid">
+        <div className="row">
+          <nav className="col-md-2 d-none d-md-block bg-light sidebar">
+            <div className="sidebar-sticky">
+              <ul className="nav flex-column">
+                <li className="nav-item">
+                  <Link to="/" className="nav-link active">
+                    <span data-feather="home"></span>
+                    Forms
+                  </Link>
+                </li>
+                {/* <li className="nav-item">
+                  <Link to="/add">
+                    <i className="fa fa-plus-square"></i>&nbsp;New Form
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link to="/explorer">
+                    <i className="fa fa-search"></i>&nbsp;Explorer
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link to="/editor/1">Editor</Link>
+                </li>
+                <li>
+                  <Link to="/viewer/1">Viewer</Link>
+                </li> */}
+              </ul>
+            </div>
+          </nav>
 
-          <Route path="/explorer" component={Explorer} />
-
-          <Route path="/" >
-            <New />
-          </Route>
-        </Switch>
+          <main role="main" className="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+            <Switch>
+              <Route path="/editor/:formId" component={Editor} />
+              <Route path="/viewer/:formId" component={Viewer} />
+              <Route path="/new" component={New} />
+              <Route path="/" component={FormList} />
+            </Switch>
+          </main>
+        </div>
       </div>
     </Router>
   );

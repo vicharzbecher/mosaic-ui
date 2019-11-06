@@ -5,7 +5,7 @@ const pool = require('./database');
 const bodyParser = require('body-parser')
 
 const app = express();
-app.use(bodyParser.json({ type: ['text/plain', 'application/*+json'] }));
+app.use(bodyParser.json({ type: ['text/plain', 'application/json'] }));
 app.use(cors());
 
 const transporter = nodemailer.createTransport({
@@ -43,7 +43,6 @@ app.post('/admins/notificate', (req, res, next) => {
 
     transporter.sendMail(mailOptions, (err, info) => {
       if(err){
-        console.log(err);
         next(err)
       }
 

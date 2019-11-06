@@ -46,7 +46,6 @@ app.post('/admins/notificate', (req, res, next) => {
         next(err)
       }
 
-      console.log('Message sent: %s', info.messageId);
       return res.send({ message: "Email successfully sent." });
     });
   });
@@ -216,7 +215,7 @@ app.get('/notification/search', (req, res, next) => {
   const email = req.query.email;
   const event_type = req.query.event_type;
 
-  if (!email || !event_type) return res.send({ message: 'email and event_type required', data: [] });
+  if (!email) return res.send({ message: 'The email value is required', data: [] });
 
   let sql = `SELECT * FROM (SELECT event_id, event_type, source_application, creation_date, CAST(JSON_UNQUOTE(JSON_EXTRACT(communication_payload, '$.to.emailAddress')) AS CHAR) as email, CAST(JSON_UNQUOTE(JSON_EXTRACT(communication_payload, '$.to.contactAttributes.subscriberAttributes.uuid')) AS CHAR) as uuid FROM customer_notification) as errors WHERE uuid IS NOT NULL AND email LIKE '%${email}%' AND event_type LIKE '%${event_type}%'`;
 

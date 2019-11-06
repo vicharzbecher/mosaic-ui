@@ -2,9 +2,11 @@ const express = require('express');
 const cors = require('cors');
 const nodemailer = require('nodemailer');
 const pool = require('./database');
+const bodyParser = require('body-parser')
 
 const app = express();
-app.use(express.json())
+app.use(bodyParser.json({ type: ['text/plain', 'application/*+json'] }));
+app.use(cors());
 
 const transporter = nodemailer.createTransport({
   service: 'SendGrid',
@@ -169,11 +171,11 @@ app.post('/licenses', (req, res, next) => {
 
 
 app.get('/customer/notifications', (req, res, next) => {
-  const query = req.query.email;
+  const email = req.query.email;
   let sql = 'SELECT event_id, event_type, source_application, communication_payload FROM customer_notification WHERE communication_payload IS NOT NULL LIMIT 10';
 
-  if(query) {
-    sql = `SELECT event_id, event_type, source_application, communication_payload FROM customer_notification WHERE communication_payload IS NOT NULL AND JSON_EXTRACT(communication_payload, '$.to.emailAddress') LIKE "%${query}%" LIMIT 10`;
+  if(email) {
+    sql = `SELECT event_id, event_type, source_application, communication_payload FROM customer_notification WHERE communication_payload IS NOT NULL AND JSON_EXTRACT(communication_payload, '$.to.emailAddress') LIKE "%${email}%" LIMIT 10`;
   }
 
   pool.query(sql, (error, results) => {
@@ -208,6 +210,38 @@ app.post('/customer/notifications', (req, res, next) => {
     if(err) next(err)
 
     return res.send({ message: "Email successfully sent." });
+  });
+});
+
+app.get('/notification/search', (req, res, next) => {
+  const email = req.query.email;
+  const event_type = req.query.event_type;
+
+  if (!email || !event_type) return res.send({ message: 'email and event_type required', data: [] });
+
+  let sql = `SELECT * FROM (SELECT event_id, event_type, source_application, creation_date, CAST(JSON_UNQUOTE(JSON_EXTRACT(communication_payload, '$.to.emailAddress')) AS CHAR) as email, CAST(JSON_UNQUOTE(JSON_EXTRACT(communication_payload, '$.to.contactAttributes.subscriberAttributes.uuid')) AS CHAR) as uuid FROM customer_notification) as errors WHERE uuid IS NOT NULL AND email LIKE '%${email}%' AND event_type LIKE '%${event_type}%'`;
+
+  if (req.query.source_application) {
+    sql += ` AND source_application LIKE '%${req.query.source_application}%'`;
+  }
+
+  if (req.query.start_date) {
+    sql += ` AND creation_date >= CONVERT("${req.query.start_date}", datetime)`;
+  }
+
+  if (req.query.end_date) {
+    sql += ` AND creation_date <= CONVERT("${req.query.end_date}", datetime)`;
+  }
+
+  sql += ` LIMIT 10`; 
+
+  pool.query(sql, (error, results) => {
+    if (error) next(error);
+    if (results && results.length > 0) {
+      return res.send({ data: results });
+    } else {
+      return res.send({ data: [], message: 'No results.'});
+    }
   });
 });
 

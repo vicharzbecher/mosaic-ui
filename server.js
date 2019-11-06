@@ -236,12 +236,42 @@ app.get('/notification/search', (req, res, next) => {
 
   pool.query(sql, (error, results) => {
     if (error) next(error);
+
     if (results && results.length > 0) {
       return res.send({ data: results });
     } else {
       return res.send({ data: [], message: 'No results.'});
     }
   });
+});
+
+app.post('/notification/send', (req, res, next) => {
+  const { dataGrid } = req.body.data;
+
+  if (dataGrid && dataGrid.length > 0) {
+    let events = []
+    
+    dataGrid.forEach((event) => {
+      if (event.checkbox) {
+        events.push(`Message to ${event.email}: There was an error during ${event.event_type} from ${event.source_application} Application at ${event.creation_date}`);
+      } 
+    });
+
+    const mailOptions = {
+      from: '"Mosaic Support" <support@mosaicui.com>',
+      to: 'josue.cornejo@wizeline.com, victor.harzbecher@dowjones.com, nikhil.varghese@dowjones.com',
+      subject: "Customer Notification Admin - Error Support",
+      text: events.join('\n')
+    };
+  
+    transporter.sendMail(mailOptions, (err, info) => {
+      if(err) next(err)
+  
+      return res.send({ message: "Email successfully sent." });
+    });
+  } else {
+    return res.status(500).json({ error: { message: 'At least one email is necessary.' }});
+  }
 });
 
 app.use((err, req, res, next) => {

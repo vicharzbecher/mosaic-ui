@@ -213,11 +213,18 @@ app.post('/customer/notifications', (req, res, next) => {
 
 app.get('/notification/search', (req, res, next) => {
   const email = req.query.email;
-  const event_type = req.query.event_type;
 
   if (!email) return res.send({ message: 'The email value is required', data: [] });
 
-  let sql = `SELECT * FROM (SELECT event_id, event_type, source_application, creation_date, CAST(JSON_UNQUOTE(JSON_EXTRACT(communication_payload, '$.to.emailAddress')) AS CHAR) as email, CAST(JSON_UNQUOTE(JSON_EXTRACT(communication_payload, '$.to.contactAttributes.subscriberAttributes.uuid')) AS CHAR) as uuid FROM customer_notification) as errors WHERE uuid IS NOT NULL AND email LIKE '%${email}%' AND event_type LIKE '%${event_type}%'`;
+  let sql = `SELECT * FROM (SELECT event_id, event_type, source_application, DATE_FORMAT(creation_date, '%Y-%m-%d') as creation_date, CAST(JSON_UNQUOTE(JSON_EXTRACT(communication_payload, '$.to.emailAddress')) AS CHAR) as email, CAST(JSON_UNQUOTE(JSON_EXTRACT(communication_payload, '$.to.contactAttributes.subscriberAttributes.uuid')) AS CHAR) as uuid FROM customer_notification) as errors WHERE uuid IS NOT NULL AND email LIKE '%${email}%'`;
+
+  if (req.query.event_type) {
+    sql += ` AND event_type LIKE '%${req.query.event_type}%'`;
+  }
+
+  if (req.query.event_uuid) {
+    sql += ` AND event_id LIKE '%${req.query.event_uuid}%'`;
+  }
 
   if (req.query.source_application) {
     sql += ` AND source_application LIKE '%${req.query.source_application}%'`;
@@ -231,7 +238,7 @@ app.get('/notification/search', (req, res, next) => {
     sql += ` AND creation_date <= CONVERT("${req.query.end_date}", datetime)`;
   }
 
-  sql += ` LIMIT 10`; 
+  sql += ` LIMIT 10`;
 
   pool.query(sql, (error, results) => {
     if (error) next(error);

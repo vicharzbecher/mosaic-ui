@@ -212,11 +212,11 @@ app.post('/customer/notifications', (req, res, next) => {
 });
 
 app.get('/notification/search', (req, res, next) => {
-  const email = req.query.email;
+  let sql = `SELECT * FROM (SELECT event_id, event_type, source_application, DATE_FORMAT(creation_date, '%Y-%m-%d %H:%i:%s') as creation_date, CAST(JSON_UNQUOTE(JSON_EXTRACT(communication_payload, '$.to.emailAddress')) AS CHAR) as email, CAST(JSON_UNQUOTE(JSON_EXTRACT(communication_payload, '$.to.contactAttributes.subscriberAttributes.uuid')) AS CHAR) as uuid FROM customer_notification) as errors WHERE uuid IS NOT NULL`;
 
-  if (!email) return res.send({ message: 'The email value is required', data: [] });
-
-  let sql = `SELECT * FROM (SELECT event_id, event_type, source_application, DATE_FORMAT(creation_date, '%Y-%m-%d %H:%i:%s') as creation_date, CAST(JSON_UNQUOTE(JSON_EXTRACT(communication_payload, '$.to.emailAddress')) AS CHAR) as email, CAST(JSON_UNQUOTE(JSON_EXTRACT(communication_payload, '$.to.contactAttributes.subscriberAttributes.uuid')) AS CHAR) as uuid FROM customer_notification) as errors WHERE uuid IS NOT NULL AND email LIKE '%${email}%'`;
+  if (req.query.email) {
+    sql += ` AND email LIKE '%${req.query.email}%'`;
+  }
 
   if (req.query.event_type) {
     sql += ` AND event_type LIKE '%${req.query.event_type}%'`;

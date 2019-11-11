@@ -214,37 +214,55 @@ app.post('/customer/notifications', (req, res, next) => {
 app.get('/notification/search', (req, res, next) => {
   let sql = `SELECT * FROM (SELECT event_id, event_type, source_application, DATE_FORMAT(creation_date, '%Y-%m-%d %H:%i:%s') as creation_date, CAST(JSON_UNQUOTE(JSON_EXTRACT(communication_payload, '$.to.emailAddress')) AS CHAR) as email, CAST(JSON_UNQUOTE(JSON_EXTRACT(communication_payload, '$.to.contactAttributes.subscriberAttributes.uuid')) AS CHAR) as uuid FROM customer_notification) as errors WHERE uuid IS NOT NULL`;
 
+  let totalSQL = `SELECT COUNT(1) as total FROM (SELECT event_id, event_type, source_application, DATE_FORMAT(creation_date, '%Y-%m-%d %H:%i:%s') as creation_date, CAST(JSON_UNQUOTE(JSON_EXTRACT(communication_payload, '$.to.emailAddress')) AS CHAR) as email, CAST(JSON_UNQUOTE(JSON_EXTRACT(communication_payload, '$.to.contactAttributes.subscriberAttributes.uuid')) AS CHAR) as uuid FROM customer_notification) as errors WHERE uuid IS NOT NULL`;
+
+  const limit = req.query.limit || 10;
+  const offset = req.query.offset || 0;
+
   if (req.query.email) {
     sql += ` AND email LIKE '%${req.query.email}%'`;
+    totalSQL += ` AND email LIKE '%${req.query.email}%'`;
   }
 
   if (req.query.event_type) {
     sql += ` AND event_type LIKE '%${req.query.event_type}%'`;
+    totalSQL += ` AND event_type LIKE '%${req.query.event_type}%'`;
   }
 
   if (req.query.event_uuid) {
     sql += ` AND uuid LIKE '%${req.query.event_uuid}%'`;
+    totalSQL += ` AND uuid LIKE '%${req.query.event_uuid}%'`;
   }
 
   if (req.query.source_application) {
     sql += ` AND source_application LIKE '%${req.query.source_application}%'`;
+    totalSQL += ` AND source_application LIKE '%${req.query.source_application}%'`;
   }
 
   if (req.query.start_date) {
     sql += ` AND creation_date >= CONVERT("${req.query.start_date}", datetime)`;
+    totalSQL += ` AND creation_date >= CONVERT("${req.query.start_date}", datetime)`;
   }
 
   if (req.query.end_date) {
     sql += ` AND creation_date <= CONVERT("${req.query.end_date}", datetime)`;
+    totalSQL += ` AND creation_date <= CONVERT("${req.query.end_date}", datetime)`;
   }
-
-  sql += ` LIMIT 10`;
+  
+  sql += ` LIMIT ${limit} OFFSET ${offset}`;
 
   pool.query(sql, (error, results) => {
     if (error) next(error);
 
     if (results && results.length > 0) {
-      return res.send({ data: results });
+      const data = results;
+
+      pool.query(totalSQL, (error, result) => {
+        if (error) next(error);
+
+        return res.send({ data: { results: data, total: result[0].total } });
+      });
+
     } else {
       return res.send({ data: [], message: 'No results.'});
     }

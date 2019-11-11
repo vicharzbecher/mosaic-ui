@@ -229,9 +229,9 @@ app.get('/notification/search', (req, res, next) => {
     totalSQL += ` AND event_type LIKE '%${req.query.event_type}%'`;
   }
 
-  if (req.query.event_uuid) {
-    sql += ` AND uuid LIKE '%${req.query.event_uuid}%'`;
-    totalSQL += ` AND uuid LIKE '%${req.query.event_uuid}%'`;
+  if (req.query.uuid) {
+    sql += ` AND uuid LIKE '%${req.query.uuid}%'`;
+    totalSQL += ` AND uuid LIKE '%${req.query.uuid}%'`;
   }
 
   if (req.query.source_application) {
